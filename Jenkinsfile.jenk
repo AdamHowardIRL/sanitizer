@@ -1,0 +1,45 @@
+#!Groovy
+/// Testing build stage replacement closure idea
+buildProfile = new org.mcafee.orbitbuild()
+env.BUILDVERSION = "1.0.0"
+env.JOB_NAME = 'Engineering_Services_Tools/1.0.0/Orbit/1.0/SecretCM'
+env.EMAIL_DL = ""
+env.EMAIL_ON_STARTED = true
+env.DEBUGLEVEL = 1
+
+//stages inside buildnode
+buildnode('OrbitBuildNode') {
+
+    prebuild() {
+    checkout scm
+    println "Prebuild.."
+    }
+
+    compile() {
+        println 'Starting compile'
+        bat 'dir'
+        dir(env.WORKSPACE){
+            //Generate .class
+            bat 'javac sanitizer.java'
+           
+            //Export to .jar
+            bat 'jar cfm sanit.jar manifest.txt *.class'
+            bat 'dir /w'
+            //Run .class
+            //bat 'java sanitizer -j test01.orbitjenkinsfile -m mandatory.txt -b blacklisted.txt -v'
+            bat 'dir /w'
+            //.jar run
+            bat 'java -cp sanit.jar sanitizer'
+            
+            bat 'dir /w'
+            
+            //Upload to Artifactory
+            buildProfile.stashForUpload([includes: "*.jar"])
+
+            //Upload build and reports to artirfactory and set artifactory url in Radar
+            buildProfile.uploadToArtifactory()
+            buildProfile.publishBuildInfo()
+            orbit.setArtifactoryUrlInRadar([artifactoryURL: "https://artifactory-lvs.corpzone.internalzone.com/artifactory" + "/webapp/#/builds/" + "SecretCM_1.0.0/" + env.BUILD_NUMBER])
+        }
+    }
+}

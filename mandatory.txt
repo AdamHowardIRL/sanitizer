@@ -1,0 +1,18 @@
+err
+unitTestResult
+buildInfo
+uploadSpec2, buildInfo
+'MCAFEE_VEGAS1'
+TS_SDK
+dependencies
+files
+espCodeCheckoutDir
+Bullseye Build
+bat
+workspaceDir
+BuildResults
+project
+env.WORKSPACE
+Calendar.MONTH
+'test_win2008r2_vs15'
+BUILDRECORDID
